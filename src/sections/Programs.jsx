@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { FiBookOpen, FiUsers, FiAward, FiHome } from 'react-icons/fi'
+import { assets } from '../assets/assets'
+
 
 const Programs = () => {
   const [ref, inView] = useInView({
@@ -100,7 +102,7 @@ const Programs = () => {
           >
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/8844915/pexels-photo-8844915.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                src= {assets.Programs_image} 
                 alt="Students in Mohalla Tuition Program" 
                 className="rounded-lg shadow-lg object-cover h-[400px] w-full"
               />

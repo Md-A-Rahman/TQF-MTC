@@ -1,29 +1,38 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'react-intersection-observer'
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import YouTube from 'react-youtube'; // ✅ Import YouTube
+import YouTubeLazyPlayer from './YouTubeLazyPlayer'; // Adjust the path
 
 const Impact = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1
-  })
+  });
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
-  }
+  };
 
-  // Impact statistics
+  const videoOptions = {
+    height: '350',  // ✅ Fit the design
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+    },
+  };
+
   const stats = [
     { value: "1,000+", label: "Students Reached", description: "Children from slum areas who received educational support" },
     { value: "50+", label: "Mohalla Centers", description: "Local tuition centers established in underprivileged areas" },
     { value: "200+", label: "Tutors Trained", description: "Dedicated mentors empowering the next generation" },
     { value: "85%", label: "Academic Improvement", description: "Average improvement in student academic performance" }
-  ]
+  ];
 
   return (
     <section id="impact" className="section bg-primary-800 text-white" ref={ref}>
       <div className="container-custom">
-        <motion.div 
+        <motion.div
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={fadeIn}
@@ -63,16 +72,17 @@ const Impact = () => {
           className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-white"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Text Section */}
             <div>
               <h3 className="text-2xl font-bold mb-4">Transforming Communities</h3>
               <p className="mb-4 text-gray-200">
-                Beyond individual success stories, our Mohalla Tuition Program has a ripple effect, 
-                transforming entire communities by raising educational standards and creating 
+                Beyond individual success stories, our Mohalla Tuition Program has a ripple effect,
+                transforming entire communities by raising educational standards and creating
                 opportunities for children who might otherwise be left behind.
               </p>
               <p className="mb-6 text-gray-200">
-                By establishing tuition centers directly within slum areas, we've created accessible 
-                educational hubs that serve as beacons of hope and advancement. These centers 
+                By establishing tuition centers directly within slum areas, we've created accessible
+                educational hubs that serve as beacons of hope and advancement. These centers
                 become integral parts of the community, fostering a culture of learning and growth.
               </p>
               <ul className="space-y-2">
@@ -91,18 +101,21 @@ const Impact = () => {
                 ))}
               </ul>
             </div>
+
+            {/* Video Section */}
             <div className="relative">
-              <img 
-                // src="https://images.pexels.com/photos/8849307/pexels-photo-8849307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                alt="Community impact" 
-                className="rounded-lg shadow-lg object-cover h-[350px] w-full"
+              <YouTubeLazyPlayer
+                videoId="QfsD7YgpVDU"
+                height="350px"
+                className="w-full"
               />
             </div>
+
           </div>
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Impact
+export default Impact;

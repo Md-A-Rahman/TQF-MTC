@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { FiUsers, FiBook, FiHeart, FiMapPin } from 'react-icons/fi'
+import { assets } from '../assets/assets'
+
+
 
 const About = () => {
   const [ref, inView] = useInView({
@@ -40,7 +43,7 @@ const About = () => {
           >
             <div className="relative">
               <img 
-                // src="https://images.pexels.com/photos/8943529/pexels-photo-8943529.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                src= {assets.about_image} 
                 alt="The Quran Foundation volunteers" 
                 className="rounded-lg shadow-lg object-cover h-[400px] w-full"
               />
