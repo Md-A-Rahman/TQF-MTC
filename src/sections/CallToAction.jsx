@@ -1,17 +1,54 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { FiBookOpen, FiHeart, FiDollarSign } from 'react-icons/fi'
+import { FiBookOpen, FiHeart, FiDollarSign, FiX, FiUser, FiMail, FiPhone, FiMapPin, FiBook, FiClock, FiUpload } from 'react-icons/fi'
 
 const CallToAction = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 })
+  const [showTutorModal, setShowTutorModal] = useState(false)
+  const [showDonationModal, setShowDonationModal] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    qualifications: '',
+    assignmentInfo: '',
+    assignedCenter: '',
+    assignedSubjects: [],
+    sessionType: '',
+    sessionTiming: '',
+    certificates: null,
+    memos: null,
+    resume: null,
+    password: 'tutor@123'
   })
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+  const centers = [
+    { id: 1, name: 'Malakpet Center' },
+    { id: 2, name: 'Mehdipatnam Center' },
+  ]
+  const subjects = [
+    'Mathematics', 'Science', 'English', 'Social Studies', 'Islamic Studies', 'Urdu', 'Hindi'
+  ]
+  const handleChange = (e) => {
+    const { name, value, type } = e.target
+    if (type === 'file') {
+      setFormData({ ...formData, [name]: e.target.files[0] })
+    } else if (type === 'checkbox') {
+      const updatedSubjects = formData.assignedSubjects.includes(value)
+        ? formData.assignedSubjects.filter(subject => subject !== value)
+        : [...formData.assignedSubjects, value]
+      setFormData({ ...formData, assignedSubjects: updatedSubjects })
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
   }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    // You can add your submit logic here
+    setShowTutorModal(false)
+  }
+
+  const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }
 
   return (
     <section id="contact" className="section bg-white" ref={ref}>
@@ -32,47 +69,237 @@ const CallToAction = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: <FiBookOpen size={28} />,
-              title: "Become a Tutor",
-              description: "Share your knowledge and make a direct impact on children's lives while gaining valuable experience.",
-              action: "Apply as Tutor",
-              color: "bg-primary-600 hover:bg-primary-700"
-            },
-            {
-              icon: <FiHeart size={28} />,
-              title: "Volunteer With Us",
-              description: "Help with organizing events, administrative tasks, or providing specialized skills.",
-              action: "Volunteer Now",
-              color: "bg-secondary-600 hover:bg-secondary-700"
-            },
-            {
-              icon: <FiDollarSign size={28} />,
-              title: "Donate",
-              description: "Support our program financially to help us reach more children and expand our impact.",
-              action: "Make a Donation",
-              color: "bg-accent-600 hover:bg-accent-700"
-            }
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.5, delay: 0.3 + (index * 0.15) }}
-              className="card text-center hover:translate-y-[-8px]"
-            >
-              <div className="inline-flex items-center justify-center p-3 bg-primary-100 text-primary-600 rounded-full mb-6">
-                {item.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-              <p className="text-gray-600 mb-8">{item.description}</p>
-              <button className={`btn ${item.color} text-white w-full`}>
-                {item.action}
-              </button>
-            </motion.div>
-          ))}
+          {/* Become a Tutor */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="card text-center hover:translate-y-[-8px]"
+          >
+            <div className="inline-flex items-center justify-center p-3 bg-primary-100 text-primary-600 rounded-full mb-6">
+              <FiBookOpen size={28} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Become a Tutor</h3>
+            <p className="text-gray-600 mb-8">Share your knowledge and make a direct impact on children's lives while gaining valuable experience.</p>
+            <button className="btn bg-primary-600 hover:bg-primary-700 text-white w-full" onClick={() => setShowTutorModal(true)}>
+              Apply as Tutor
+            </button>
+          </motion.div>
+          {/* Volunteer With Us */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="card text-center hover:translate-y-[-8px]"
+          >
+            <div className="inline-flex items-center justify-center p-3 bg-primary-100 text-primary-600 rounded-full mb-6">
+              <FiHeart size={28} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Volunteer With Us</h3>
+            <p className="text-gray-600 mb-8">Help with organizing events, administrative tasks, or providing specialized skills.</p>
+            <button className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full">
+              Volunteer Now
+            </button>
+          </motion.div>
+          {/* Donate */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="card text-center hover:translate-y-[-8px]"
+          >
+            <div className="inline-flex items-center justify-center p-3 bg-primary-100 text-primary-600 rounded-full mb-6">
+              <FiDollarSign size={28} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Donate</h3>
+            <p className="text-gray-600 mb-8">Support our program financially to help us reach more children and expand our impact.</p>
+            <button className="btn bg-accent-600 hover:bg-accent-700 text-white w-full" onClick={() => setShowDonationModal(true)}>
+              Make a Donation
+            </button>
+          </motion.div>
         </div>
+
+        {/* Tutor Modal */}
+        {showTutorModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
+            >
+              <button onClick={() => setShowTutorModal(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
+                <FiX size={22} />
+              </button>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">Apply as Tutor</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiUser size={18} /></div>
+                      <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiMail size={18} /></div>
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiPhone size={18} /></div>
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} pattern="[0-9]{10}" className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">10-digit mobile number</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div className="relative">
+                      <input type="text" name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">Default password: tutor@123</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Qualifications</label>
+                    <textarea name="qualifications" value={formData.qualifications} onChange={handleChange} rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Assignment Information</label>
+                    <textarea name="assignmentInfo" value={formData.assignmentInfo} onChange={handleChange} rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Center</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiMapPin size={18} /></div>
+                      <select name="assignedCenter" value={formData.assignedCenter} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        <option value="">Select a center</option>
+                        {centers.map(center => (
+                          <option key={center.id} value={center.id}>{center.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Subjects</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {subjects.map(subject => (
+                        <label key={subject} className="flex items-center space-x-2">
+                          <input type="checkbox" name="assignedSubjects" value={subject} checked={formData.assignedSubjects.includes(subject)} onChange={handleChange} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                          <span className="text-sm text-gray-700">{subject}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Session Type</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiBook size={18} /></div>
+                      <select name="sessionType" value={formData.sessionType} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        <option value="">Select session type</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="tuition">Tuition</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Session Timing</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiClock size={18} /></div>
+                      <select name="sessionTiming" value={formData.sessionTiming} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        <option value="">Select timing</option>
+                        <option value="after_fajr">After Fajr</option>
+                        <option value="after_zohar">After Zohar</option>
+                        <option value="after_asar">After Asar</option>
+                        <option value="after_maghrib">After Maghrib</option>
+                        <option value="after_isha">After Isha</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Required Documents</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Certificates</label>
+                      <div className="relative">
+                        <input type="file" name="certificates" onChange={handleChange} accept=".pdf,.doc,.docx" className="hidden" id="certificates" required />
+                        <label htmlFor="certificates" className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                          <FiUpload className="mr-2" />
+                          <span className="text-sm">Upload Certificates</span>
+                        </label>
+                        {formData.certificates && (<p className="mt-1 text-sm text-gray-500">{formData.certificates.name}</p>)}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Memos</label>
+                      <div className="relative">
+                        <input type="file" name="memos" onChange={handleChange} accept=".pdf,.doc,.docx" className="hidden" id="memos" required />
+                        <label htmlFor="memos" className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                          <FiUpload className="mr-2" />
+                          <span className="text-sm">Upload Memos</span>
+                        </label>
+                        {formData.memos && (<p className="mt-1 text-sm text-gray-500">{formData.memos.name}</p>)}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Resume</label>
+                      <div className="relative">
+                        <input type="file" name="resume" onChange={handleChange} accept=".pdf,.doc,.docx" className="hidden" id="resume" required />
+                        <label htmlFor="resume" className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                          <FiUpload className="mr-2" />
+                          <span className="text-sm">Upload Resume</span>
+                        </label>
+                        {formData.resume && (<p className="mt-1 text-sm text-gray-500">{formData.resume.name}</p>)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-4 pt-4">
+                  <button type="button" onClick={() => setShowTutorModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">Submit Application</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Donation Modal */}
+        {showDonationModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative text-center"
+            >
+              <button onClick={() => setShowDonationModal(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
+                <FiX size={22} />
+              </button>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">Support Us</h2>
+              <div className="mb-6">
+                {/* Replace the src with your actual QR code image */}
+                <img src="/qr-placeholder.png" alt="UPI QR Code" className="mx-auto w-40 h-40 rounded-lg border" />
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700">UPI ID:</span> <span className="text-primary-600">yourupi@bank</span>
+              </div>
+              <div className="mb-6">
+                <span className="font-semibold text-gray-700">Phone:</span> <span className="text-primary-600">+91 91218 06777</span>
+              </div>
+              <p className="text-gray-500 text-sm">Scan the QR code or use the UPI ID/phone number to make a donation. Thank you for your support!</p>
+            </motion.div>
+          </div>
+        )}
 
         {/* Contact Form */}
         <motion.div

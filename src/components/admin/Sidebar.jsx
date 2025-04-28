@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion'
 import { FiLogOut } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
+  const navigate = useNavigate()
+  const HandleLogout = () => {
+    navigate('/')
+  }
   return (
     <aside className="w-64 bg-white shadow-xl fixed h-screen bg-gradient-to-b from-white to-blue-50">
       <div className="p-6 border-b border-blue-100">
@@ -30,7 +35,7 @@ const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
       </nav>
 
       <div className="absolute bottom-0 w-full p-6 border-t border-blue-100 bg-white bg-opacity-80 backdrop-blur-sm">
-        <button className="w-full flex items-center px-4 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-300">
+        <button onClick={HandleLogout} className="w-full flex items-center px-4 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-300">
           <FiLogOut className="mr-3" />
           <span className="font-medium">Logout</span>
         </button>
