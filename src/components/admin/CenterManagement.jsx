@@ -27,7 +27,7 @@ const LocationPicker = ({ position, setPosition }) => {
 const sampleCenters = [
   {
     id: 1,
-    centerName: 'Malakpet Center',
+    centerName: 'Masjid-e-Ali Center',
     location: 'Malakpet, Hyderabad',
     coordinates: [17.3850, 78.4867],
     numTutors: 5,
@@ -38,7 +38,7 @@ const sampleCenters = [
   },
   {
     id: 2,
-    centerName: 'Mehdipatnam Center',
+    centerName: 'Masjid-e-Hussain Center',
     location: 'Mehdipatnam, Hyderabad',
     coordinates: [17.3937, 78.4377],
     numTutors: 4,
@@ -226,6 +226,8 @@ const CenterManagement = () => {
                     <LocationPicker position={position} setPosition={setPosition} />
                   </MapContainer>
                 </div>
+                {position} <br />
+                {position}
                 <p className="mt-1 text-sm text-gray-500">Click on the map to select location</p>
               </div>
 

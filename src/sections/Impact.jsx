@@ -93,7 +93,7 @@ const Impact = () => {
             </div>
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/8849307/pexels-photo-8849307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                // src="https://images.pexels.com/photos/8849307/pexels-photo-8849307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
                 alt="Community impact" 
                 className="rounded-lg shadow-lg object-cover h-[350px] w-full"
               />

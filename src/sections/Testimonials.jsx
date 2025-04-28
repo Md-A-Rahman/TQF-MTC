@@ -14,21 +14,21 @@ const Testimonials = () => {
   const testimonials = [
     {
       content: "The Mohalla Tuition Program changed my life. I was struggling in school, but the tutors helped me understand my subjects better. Now I'm one of the top students in my class and dream of becoming a doctor.",
-      name: "Aisha Khan",
+      // name: "Aisha Khan",
       role: "Student, 8th Grade",
-      image: "https://images.pexels.com/photos/3662850/pexels-photo-3662850.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      // image: "https://images.pexels.com/photos/3662850/pexels-photo-3662850.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     },
     {
       content: "Being a tutor with the Mohalla program has been incredibly rewarding. I've watched my students grow academically while also developing as a teacher myself. It's a beautiful exchange of knowledge that benefits everyone involved.",
-      name: "Rahul Sharma",
+      // name: "Rahul Sharma",
       role: "Tutor, 3 years",
-      image: "https://images.pexels.com/photos/7516347/pexels-photo-7516347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      // image: "https://images.pexels.com/photos/7516347/pexels-photo-7516347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     },
     {
       content: "As a parent in our community, I've seen remarkable changes since the Mohalla Tuition Center opened. My children are more confident, their grades have improved, and they're excited about learning. This program truly transforms lives.",
-      name: "Fatima Begum",
+      // name: "Fatima Begum",
       role: "Parent",
-      image: "https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      // image: "https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     }
   ]
 

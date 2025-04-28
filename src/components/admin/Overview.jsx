@@ -6,7 +6,7 @@ const Overview = () => {
     { label: 'Total Tutors', value: '45', icon: <FiUsers />, color: 'from-blue-500 to-blue-600' },
     { label: 'Active Centers', value: '12', icon: <FiMapPin />, color: 'from-green-500 to-green-600' },
     { label: 'Today\'s Attendance', value: '92%', icon: <FiClock />, color: 'from-purple-500 to-purple-600' },
-    { label: 'Student Growth', value: '+15%', icon: <FiTrendingUp />, color: 'from-orange-500 to-orange-600' }
+    // { label: 'Student Growth', value: '+15%', icon: <FiTrendingUp />, color: 'from-orange-500 to-orange-600' }
   ]
 
   return (
@@ -46,9 +46,9 @@ const Overview = () => {
         </h2>
         <div className="space-y-4">
           {[
-            { time: '2 hours ago', text: 'New tutor Rahul S. registered' },
-            { time: '3 hours ago', text: 'Center #8 reported 100% attendance' },
-            { time: '5 hours ago', text: 'Monthly report generated for Center #5' }
+            { time: '2 hours ago', text: 'MA Rahman filled attendance' },
+            { time: '3 hours ago', text: 'Safi filled attendance' },
+            // { time: '5 hours ago', text: 'Zain filled attendance' }
           ].map((activity, index) => (
             <motion.div
               key={index}
