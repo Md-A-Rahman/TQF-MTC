@@ -91,9 +91,14 @@ const CallToAction = () => {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">Volunteer With Us</h3>
             <p className="text-gray-600 mb-8">Help with organizing events, administrative tasks, or providing specialized skills.</p>
-            <button className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full">
+            <a 
+              href="https://thequranfoundation.org/become-a-volunteer/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full block"
+            >
               Volunteer Now
-            </button>
+            </a>
           </motion.div>
           {/* Donate */}
           <motion.div
@@ -107,9 +112,14 @@ const CallToAction = () => {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">Donate</h3>
             <p className="text-gray-600 mb-8">Support our program financially to help us reach more children and expand our impact.</p>
-            <button className="btn bg-accent-600 hover:bg-accent-700 text-white w-full" onClick={() => setShowDonationModal(true)}>
+            <a 
+              href="https://thequranfoundation.org/donation/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full block"
+            >
               Make a Donation
-            </button>
+            </a>
           </motion.div>
         </div>
 
@@ -203,35 +213,6 @@ const CallToAction = () => {
             </motion.div>
           </div>
         )}
-
-        {/* Donation Modal */}
-        {showDonationModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative text-center"
-            >
-              <button onClick={() => setShowDonationModal(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
-                <FiX size={22} />
-              </button>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">Support Us</h2>
-              <div className="mb-6">
-                {/* Replace the src with your actual QR code image */}
-                <img src="/qr-placeholder.png" alt="UPI QR Code" className="mx-auto w-40 h-40 rounded-lg border" />
-              </div>
-              <div className="mb-2">
-                <span className="font-semibold text-gray-700">UPI ID:</span> <span className="text-primary-600">yourupi@bank</span>
-              </div>
-              <div className="mb-6">
-                <span className="font-semibold text-gray-700">Phone:</span> <span className="text-primary-600">+91 91218 06777</span>
-              </div>
-              <p className="text-gray-500 text-sm">Scan the QR code or use the UPI ID/phone number to make a donation. Thank you for your support!</p>
-            </motion.div>
-          </div>
-        )}
-
         {/* Contact Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
