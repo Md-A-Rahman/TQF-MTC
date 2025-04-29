@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FiPhone, FiLock } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import TutorDashboard from '../components/tutor/TutorDashboard'
 
 const TutorPage = () => {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -12,7 +17,18 @@ const TutorPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle login logic here
+    setError('')
+
+    if (phone === '9876543210' && password === 'tutor@123') {
+      setIsLoggedIn(true)
+      navigate('/tutor-dashboard')
+    } else {
+      setError('Invalid credentials. Please try again.')
+    }
+  }
+
+  if (isLoggedIn) {
+    return <TutorDashboard />
   }
   
   return (
@@ -32,6 +48,12 @@ const TutorPage = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             <div className="relative">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number

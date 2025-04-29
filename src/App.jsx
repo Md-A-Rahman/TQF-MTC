@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage'
 import AdminPage from './pages/AdminPage'
 import TutorPage from './pages/TutorPage'
 import AdminDashboard from './components/admin/AdminDashboard'
+import TutorDashboard from './components/tutor/TutorDashboard'
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/tutor" element={<TutorPage />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/tutor-dashboard" element={<TutorDashboard />} />
         </Routes>
       </main>
       <ToastContainer />
