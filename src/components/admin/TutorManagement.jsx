@@ -51,6 +51,11 @@ const TutorManagement = () => {
     assignedSubjects: [],
     sessionType: '',
     sessionTiming: '',
+    aadharNumber: '',
+    aadharPhoto: null,
+    bankAccountNumber: '',
+    bankIFSC: '',
+    bankPassbookPhoto: null,
     certificates: null,
     memos: null,
     resume: null,
@@ -637,6 +642,113 @@ const TutorManagement = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* New fields for Aadhar and Bank details */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Aadhar Number
+                    </label>
+                    <input
+                      type="text"
+                      name="aadharNumber"
+                      value={formData.aadharNumber}
+                      onChange={handleChange}
+                      pattern="[0-9]{4} [0-9]{4} [0-9]{4}"
+                      placeholder="1234 5678 9012"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Aadhar Card Photo
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        name="aadharPhoto"
+                        onChange={handleChange}
+                        accept="image/*"
+                        className="hidden"
+                        id="aadharPhoto"
+                        required
+                      />
+                      <label
+                        htmlFor="aadharPhoto"
+                        className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <FiUpload className="mr-2" />
+                        <span className="text-sm">Upload Aadhar Photo</span>
+                      </label>
+                      {formData.aadharPhoto && (
+                        <p className="mt-1 text-sm text-gray-500">
+                          {formData.aadharPhoto.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Bank Account Number
+                    </label>
+                    <input
+                      type="text"
+                      name="bankAccountNumber"
+                      value={formData.bankAccountNumber}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Bank IFSC Code
+                    </label>
+                    <input
+                      type="text"
+                      name="bankIFSC"
+                      value={formData.bankIFSC}
+                      onChange={handleChange}
+                      pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+                      placeholder="ABCD0123456"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Bank Passbook Photo
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        name="bankPassbookPhoto"
+                        onChange={handleChange}
+                        accept="image/*"
+                        className="hidden"
+                        id="bankPassbookPhoto"
+                        required
+                      />
+                      <label
+                        htmlFor="bankPassbookPhoto"
+                        className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <FiUpload className="mr-2" />
+                        <span className="text-sm">Upload Passbook Photo</span>
+                      </label>
+                      {formData.bankPassbookPhoto && (
+                        <p className="mt-1 text-sm text-gray-500">
+                          {formData.bankPassbookPhoto.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-4 pt-4">
@@ -750,114 +862,3 @@ const TutorManagement = () => {
 
 export default TutorManagement
 
-
-
-
-
-
-
-
-// import { useState } from 'react';
-// import { motion } from 'framer-motion';
-// import { CSVLink } from 'react-csv';
-// import { notifySuccess } from './toastConfig';
-// import TutorTable from './TutorTable';
-// import AddEditTutorForm from './AddEditTutorForm';
-// import TutorProfileModal from './TutorProfileModal';
-
-// const TutorManagement = () => {
-//   const [tutors, setTutors] = useState([]);
-//   const [selectedTutor, setSelectedTutor] = useState(null);
-//   const [showForm, setShowForm] = useState(false);
-//   const [isEditMode, setIsEditMode] = useState(false);
-//   const [profileTutor, setProfileTutor] = useState(null);
-
-//   const handleAddTutor = (newTutor) => {
-//     setTutors(prev => [...prev, { id: Date.now(), ...newTutor }]);
-//     notifySuccess("Tutor added successfully!");
-//     setShowForm(false);
-//   };
-
-//   const handleEditTutor = (updatedTutor) => {
-//     setTutors(prev => prev.map(t => t.id === updatedTutor.id ? updatedTutor : t));
-//     notifySuccess("Tutor updated successfully!");
-//     setShowForm(false);
-//   };
-
-//   const handleDeleteTutor = (id) => {
-//     if (window.confirm("Are you sure you want to delete this tutor?")) {
-//       setTutors(prev => prev.filter(t => t.id !== id));
-//       notifySuccess("Tutor deleted successfully!");
-//     }
-//   };
-
-//   const headers = [
-//     { label: "Full Name", key: "fullName" },
-//     { label: "Email", key: "email" },
-//     { label: "Phone", key: "phone" },
-//     { label: "Qualifications", key: "qualifications" },
-//     { label: "Centers", key: "centers" },
-//     { label: "Subjects", key: "subjects" },
-//     { label: "Session", key: "session" },
-//     { label: "Timings", key: "timings" },
-//   ];
-
-//   return (
-//     <div className="space-y-8">
-//       <div className="flex justify-between items-center">
-//         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-//           Tutor Management
-//         </h1>
-//         <div className="flex gap-4">
-//           <CSVLink
-//             data={tutors}
-//             headers={headers}
-//             filename="tutors.csv"
-//             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-//           >
-//             Export CSV
-//           </CSVLink>
-//           <button
-//             onClick={() => {
-//               setIsEditMode(false);
-//               setSelectedTutor(null);
-//               setShowForm(true);
-//             }}
-//             className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700"
-//           >
-//             Add New Tutor
-//           </button>
-//         </div>
-//       </div>
-
-//       <TutorTable
-//         tutors={tutors}
-//         onEdit={(tutor) => {
-//           setSelectedTutor(tutor);
-//           setIsEditMode(true);
-//           setShowForm(true);
-//         }}
-//         onDelete={handleDeleteTutor}
-//         onProfileOpen={setProfileTutor}
-//       />
-
-//       {showForm && (
-//         <AddEditTutorForm
-//           isEditMode={isEditMode}
-//           tutorData={selectedTutor}
-//           onSave={isEditMode ? handleEditTutor : handleAddTutor}
-//           onClose={() => setShowForm(false)}
-//         />
-//       )}
-
-//       {profileTutor && (
-//         <TutorProfileModal
-//           tutor={profileTutor}
-//           onClose={() => setProfileTutor(null)}
-//         />
-//       )}
-//     </div>
-//   );
-// };
-
-// export default TutorManagement;
