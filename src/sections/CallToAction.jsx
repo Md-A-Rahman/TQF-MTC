@@ -12,15 +12,9 @@ const CallToAction = () => {
     email: '',
     phone: '',
     qualifications: '',
-    assignmentInfo: '',
-    assignedCenter: '',
-    assignedSubjects: [],
-    sessionType: '',
-    sessionTiming: '',
     certificates: null,
     memos: null,
-    resume: null,
-    password: 'tutor@123'
+    resume: null
   })
   const centers = [
     { id: 1, name: 'Malakpet Center' },
@@ -97,9 +91,14 @@ const CallToAction = () => {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">Volunteer With Us</h3>
             <p className="text-gray-600 mb-8">Help with organizing events, administrative tasks, or providing specialized skills.</p>
-            <button className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full">
+            <a 
+              href="https://thequranfoundation.org/become-a-volunteer/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full block"
+            >
               Volunteer Now
-            </button>
+            </a>
           </motion.div>
           {/* Donate */}
           <motion.div
@@ -113,9 +112,14 @@ const CallToAction = () => {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">Donate</h3>
             <p className="text-gray-600 mb-8">Support our program financially to help us reach more children and expand our impact.</p>
-            <button className="btn bg-accent-600 hover:bg-accent-700 text-white w-full" onClick={() => setShowDonationModal(true)}>
+            <a 
+              href="https://thequranfoundation.org/donation/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn bg-secondary-600 hover:bg-secondary-700 text-white w-full block"
+            >
               Make a Donation
-            </button>
+            </a>
           </motion.div>
         </div>
 
@@ -156,74 +160,11 @@ const CallToAction = () => {
                     </div>
                     <p className="mt-1 text-sm text-gray-500">10-digit mobile number</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <div className="relative">
-                      <input type="text" name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
-                    </div>
-                    <p className="mt-1 text-sm text-gray-500">Default password: tutor@123</p>
-                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Qualifications</label>
                     <textarea name="qualifications" value={formData.qualifications} onChange={handleChange} rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Assignment Information</label>
-                    <textarea name="assignmentInfo" value={formData.assignmentInfo} onChange={handleChange} rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Center</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiMapPin size={18} /></div>
-                      <select name="assignedCenter" value={formData.assignedCenter} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
-                        <option value="">Select a center</option>
-                        {centers.map(center => (
-                          <option key={center.id} value={center.id}>{center.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Subjects</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {subjects.map(subject => (
-                        <label key={subject} className="flex items-center space-x-2">
-                          <input type="checkbox" name="assignedSubjects" value={subject} checked={formData.assignedSubjects.includes(subject)} onChange={handleChange} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                          <span className="text-sm text-gray-700">{subject}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Session Type</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiBook size={18} /></div>
-                      <select name="sessionType" value={formData.sessionType} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
-                        <option value="">Select session type</option>
-                        <option value="arabic">Arabic</option>
-                        <option value="tuition">Tuition</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Session Timing</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><FiClock size={18} /></div>
-                      <select name="sessionTiming" value={formData.sessionTiming} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
-                        <option value="">Select timing</option>
-                        <option value="after_fajr">After Fajr</option>
-                        <option value="after_zohar">After Zohar</option>
-                        <option value="after_asar">After Asar</option>
-                        <option value="after_maghrib">After Maghrib</option>
-                        <option value="after_isha">After Isha</option>
-                      </select>
-                    </div>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -272,35 +213,6 @@ const CallToAction = () => {
             </motion.div>
           </div>
         )}
-
-        {/* Donation Modal */}
-        {showDonationModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative text-center"
-            >
-              <button onClick={() => setShowDonationModal(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
-                <FiX size={22} />
-              </button>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">Support Us</h2>
-              <div className="mb-6">
-                {/* Replace the src with your actual QR code image */}
-                <img src="/qr-placeholder.png" alt="UPI QR Code" className="mx-auto w-40 h-40 rounded-lg border" />
-              </div>
-              <div className="mb-2">
-                <span className="font-semibold text-gray-700">UPI ID:</span> <span className="text-primary-600">yourupi@bank</span>
-              </div>
-              <div className="mb-6">
-                <span className="font-semibold text-gray-700">Phone:</span> <span className="text-primary-600">+91 91218 06777</span>
-              </div>
-              <p className="text-gray-500 text-sm">Scan the QR code or use the UPI ID/phone number to make a donation. Thank you for your support!</p>
-            </motion.div>
-          </div>
-        )}
-
         {/* Contact Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
