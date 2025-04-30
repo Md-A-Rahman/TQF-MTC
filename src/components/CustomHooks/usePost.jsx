@@ -11,12 +11,14 @@ const usePost = () => {
     try {
       const res = await axios.post(url, payload);
       setResponse(res.data);
-      return {data:res.data}
+      // return response;
+      return {data:res.data};
     } catch (err) {
       console.log(err);
       notifyError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
+      // return {loading}
     }
   };
 

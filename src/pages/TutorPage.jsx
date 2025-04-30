@@ -11,7 +11,7 @@ const TutorPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { post, loading } = usePost();
+  const { post, loading,response } = usePost();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,6 +27,9 @@ const TutorPage = () => {
     // console.log(payload)
 
     const result = await post("http://localhost:3000/login", payload);
+    console.log("API called")
+    console.log(result)
+    console.log("response: ",response,"loading: ",loading)
 
     if(result.data.user){
 
@@ -59,7 +62,6 @@ const TutorPage = () => {
     // console.log("API Response:", result.data.token);
 
     // const {response,loading}=usePost("http://localhost:3000/login",payload)
-    // console.log("response: ",response,"loading: ",loading)
 
     // if (phone === "9876543210" && password === "tutor@123") {
     //   setIsLoggedIn(true);
