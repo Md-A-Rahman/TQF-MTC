@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import { motion, AnimatePresence } from 'framer-motion'
+import useGet from '../CustomHooks/useGet'
 import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import SearchControl from './SearchControl'; // Adjust path if needed
-import { reverseGeocode } from './utils/reverseGeocode';
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl
@@ -26,35 +25,35 @@ const LocationPicker = ({ position, setPosition }) => {
 }
 
 // Sample data for demonstration
-const sampleCenters = [
-  {
-    id: 1,
-    centerName: 'Malakpet Center',
-    location: 'Malakpet, Hyderabad',
-    coordinates: [17.3850, 78.4867],
-    numTutors: 5,
-    numStudents: 50,
-    sadarName: 'Ahmed Khan',
-    sadarContact: '9876543210',
-    area: 'south'
-  },
-  {
-    id: 2,
-    centerName: 'Mehdipatnam Center',
-    location: 'Mehdipatnam, Hyderabad',
-    coordinates: [17.3937, 78.4377],
-    numTutors: 4,
-    numStudents: 45,
-    sadarName: 'Rahul Kumar',
-    sadarContact: '9876543211',
-    area: 'west'
-  },
-]
+// const sampleCenters = [
+//   {
+//     id: 1,
+//     centerName: 'Masjid-e-Ali Center',
+//     location: 'Malakpet, Hyderabad',
+//     coordinates: [17.3850, 78.4867],
+//     numTutors: 5,
+//     numStudents: 50,
+//     sadarName: 'Ahmed Khan',
+//     sadarContact: '9876543210',
+//     area: 'south'
+//   },
+//   {
+//     id: 2,
+//     centerName: 'Masjid-e-Hussain Center',
+//     location: 'Mehdipatnam, Hyderabad',
+//     coordinates: [17.3937, 78.4377],
+//     numTutors: 4,
+//     numStudents: 45,
+//     sadarName: 'Rahul Kumar',
+//     sadarContact: '9876543211',
+//     area: 'west'
+//   },
+// ]
 
 const CenterManagement = () => {
   const [showForm, setShowForm] = useState(false)
+  // const [centers, centers] = useState(null)
   const [showDetails, setShowDetails] = useState(null)
-  const [centers, setCenters] = useState(sampleCenters)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedArea, setSelectedArea] = useState('')
   const [formData, setFormData] = useState({
@@ -65,17 +64,13 @@ const CenterManagement = () => {
     sadarContact: '',
     location: null
   })
-  const [position, setPosition] = useState([17.3850, 78.4867]) // Default to Hyderabad coordinates
+  const [position, setPosition] = useState([17.3850, 78.4867])
 
-  useEffect(() => {
-    const fetchAddress = async () => {
-      if (position) {
-        const address = await reverseGeocode(position[0], position[1]);
-        setFormData((prev) => ({ ...prev, location: address }));
-      }
-    };
-    fetchAddress();
-  }, [position]);
+  const { response: centers, loading } = useGet("http://localhost:3000/adminnoauth/Centers");
+
+  if (loading) return <p>Loading tutors...</p>;
+  console.log("From the CenterManagement..!!!",centers)
+  if (!centers) return <p>No tutors found.</p>;
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -85,7 +80,7 @@ const CenterManagement = () => {
       coordinates: position,
       location: 'Custom Location' // You would typically reverse geocode the coordinates
     }
-    setCenters([...centers, newCenter])
+    centers([...centers, newCenter])
     setShowForm(false)
     setFormData({
       centerName: '',
@@ -97,6 +92,7 @@ const CenterManagement = () => {
     })
   }
 
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -106,12 +102,13 @@ const CenterManagement = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this center?')) {
-      setCenters(centers.filter(center => center.id !== id))
+      centers(centers.filter(center => center.id !== id))
     }
   }
 
+
   const filteredCenters = centers.filter(center => {
-    const matchesSearch = center.centerName.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = (center.name.toLowerCase() || "").includes(searchTerm.toLowerCase())
     const matchesArea = !selectedArea || center.area === selectedArea
     return matchesSearch && matchesArea
   })
@@ -223,40 +220,24 @@ const CenterManagement = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Center Location (Click on map to set location)
+                  Center Location
                 </label>
                 <div className="h-[300px] rounded-lg overflow-hidden border border-gray-300">
-                <MapContainer
-                  center={position}
-                  zoom={13}
-                  style={{ height: '100%', width: '100%' }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; OpenStreetMap contributors'
-                  />
-                  <SearchControl setPosition={setPosition} />  {/* ✅ Enable search */}
-                  <LocationPicker position={position} setPosition={setPosition} />
-                </MapContainer>
-
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Selected coordinates: {position[0].toFixed(4)}, {position[1].toFixed(4)}
-                </p>
-
-                <p className="mt-2 text-sm text-gray-500">
-                  💡 Tip: 
-                  Open <a 
-                    href="https://maps.google.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-blue-600 underline"
+                  <MapContainer
+                    center={position}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
                   >
-                    Google Maps
-                  </a>, right-click your center's location, select 
-                  <strong> "What's here?"</strong>, and copy the coordinates shown at the bottom.
-                </p>
-
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <LocationPicker position={position} setPosition={setPosition} />
+                  </MapContainer>
+                </div>
+                {position} <br />
+                {position}
+                <p className="mt-1 text-sm text-gray-500">Click on the map to select location</p>
               </div>
 
               <div className="flex justify-end space-x-4">
@@ -406,7 +387,7 @@ const CenterManagement = () => {
                   onClick={() => setShowDetails(center)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{center.centerName}</div>
+                    <div className="text-sm font-medium text-gray-900">{center.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500 flex items-center">
@@ -415,10 +396,10 @@ const CenterManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numTutors}</div>
+                    <div className="text-sm text-gray-900">{center.tutors.length}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numStudents}</div>
+                    <div className="text-sm text-gray-900">{center.students.length}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
