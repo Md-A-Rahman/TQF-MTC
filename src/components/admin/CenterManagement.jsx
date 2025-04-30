@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
+import useGet from '../CustomHooks/useGet';
 import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import SearchControl from './SearchControl'; // Adjust path if needed
 import { reverseGeocode } from './utils/reverseGeocode';
 
 // Fix for default marker icon
@@ -25,36 +25,9 @@ const LocationPicker = ({ position, setPosition }) => {
   return position ? <Marker position={position} /> : null;
 };
 
-// Sample data for demonstration
-const sampleCenters = [
-  {
-    id: 1,
-    centerName: 'Malakpet Center',
-    location: 'Malakpet, Hyderabad',
-    coordinates: [17.3850, 78.4867],
-    numTutors: 5,
-    numStudents: 50,
-    sadarName: 'Ahmed Khan',
-    sadarContact: '9876543210',
-    area: 'south',
-  },
-  {
-    id: 2,
-    centerName: 'Mehdipatnam Center',
-    location: 'Mehdipatnam, Hyderabad',
-    coordinates: [17.3937, 78.4377],
-    numTutors: 4,
-    numStudents: 45,
-    sadarName: 'Rahul Kumar',
-    sadarContact: '9876543211',
-    area: 'west',
-  },
-];
-
 const CenterManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [showDetails, setShowDetails] = useState(null);
-  const [centers, setCenters] = useState(sampleCenters);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [formData, setFormData] = useState({
@@ -69,16 +42,13 @@ const CenterManagement = () => {
   const [mapCenter, setMapCenter] = useState([17.3850, 78.4867]);
   const [markerPosition, setMarkerPosition] = useState(null);
 
+  const { response: centers, loading } = useGet("http://localhost:3000/adminnoauth/Centers");
+
   const handleCoordinatesChange = (e) => {
     const value = e.target.value;
     setFormData({ ...formData, coordinates: value });
     
-    // Try to parse the coordinates when user pastes or enters them
     if (value) {
-      // Handle different formats:
-      // 1. "17.3850, 78.4867" (with comma)
-      // 2. "17.3850 78.4867" (with space)
-      // 3. "17.3850,78.4867" (no space after comma)
       const parts = value.split(/[, ]+/).filter(part => part.trim() !== '');
       
       if (parts.length === 2) {
@@ -102,7 +72,6 @@ const CenterManagement = () => {
       }
     }
     
-    // If we get here, the coordinates are invalid or empty
     setFormData(prev => ({ ...prev, location: '' }));
     setMarkerPosition(null);
   };
@@ -112,17 +81,24 @@ const CenterManagement = () => {
   };
 
   const handleAddNewCenter = (newCenter) => {
-    setCenters([...centers, newCenter]);
+    // This would be replaced with your API call to add a new center
+    console.log('New center to be added:', newCenter);
+    // setCenters([...centers, newCenter]);
   };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this center?')) {
-      setCenters(centers.filter((center) => center.id !== id));
+      // This would be replaced with your API call to delete a center
+      console.log('Center to be deleted:', id);
+      // setCenters(centers.filter(center => center.id !== id));
     }
   };
 
-  const filteredCenters = centers.filter((center) => {
-    const matchesSearch = center.centerName.toLowerCase().includes(searchTerm.toLowerCase());
+  if (loading) return <p>Loading centers...</p>;
+  if (!centers) return <p>No centers found.</p>;
+
+  const filteredCenters = centers.filter(center => {
+    const matchesSearch = (center.name?.toLowerCase() || "").includes(searchTerm.toLowerCase());
     const matchesArea = !selectedArea || center.area === selectedArea;
     return matchesSearch && matchesArea;
   });
@@ -168,7 +144,6 @@ const CenterManagement = () => {
                 const { coordinates, ...rest } = formData;
                 const [lat, lng] = coordinates.split(/[, ]+/).map(parseFloat);
                 const newCenter = {
-                  id: Date.now(),
                   ...rest,
                   coordinates: [lat, lng],
                 };
@@ -263,7 +238,7 @@ const CenterManagement = () => {
                   <div className="mt-1 flex items-start text-sm text-blue-600">
                     <FiMapPin className="mr-1.5 mt-0.5 flex-shrink-0" />
                     <span>
-                      <span className="font-medium">Quick tip:</span> Right-click any location on Google Maps and Copy coordinates to paste here
+                      <span className="font-medium">Quick tip:</span> Right-click any location on Google Maps and select "Copy coordinates" to paste here
                     </span>
                   </div>
                 </div>
@@ -356,7 +331,7 @@ const CenterManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Center Name</p>
-                    <p className="font-medium">{showDetails.centerName}</p>
+                    <p className="font-medium">{showDetails.name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Location</p>
@@ -364,39 +339,33 @@ const CenterManagement = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Number of Tutors</p>
-                    <p className="font-medium">{showDetails.numTutors}</p>
+                    <p className="font-medium">{showDetails.tutors?.length || 0}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Number of Students</p>
-                    <p className="font-medium">{showDetails.numStudents}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Sadar Name</p>
-                    <p className="font-medium">{showDetails.sadarName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Sadar Contact</p>
-                    <p className="font-medium">{showDetails.sadarContact}</p>
+                    <p className="font-medium">{showDetails.students?.length || 0}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Coordinates</p>
-                    <p className="font-medium">{showDetails.coordinates.join(', ')}</p>
+                    <p className="font-medium">{showDetails.coordinates?.join(', ') || 'N/A'}</p>
                   </div>
                 </div>
 
-                <div className="h-[200px] rounded-lg overflow-hidden border border-gray-300 mt-4">
-                  <MapContainer
-                    center={showDetails.coordinates}
-                    zoom={13}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <Marker position={showDetails.coordinates} />
-                  </MapContainer>
-                </div>
+                {showDetails.coordinates && (
+                  <div className="h-[200px] rounded-lg overflow-hidden border border-gray-300 mt-4">
+                    <MapContainer
+                      center={showDetails.coordinates}
+                      zoom={13}
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
+                      <Marker position={showDetails.coordinates} />
+                    </MapContainer>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -456,7 +425,7 @@ const CenterManagement = () => {
                   onClick={() => setShowDetails(center)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{center.centerName}</div>
+                    <div className="text-sm font-medium text-gray-900">{center.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500 flex items-center">
@@ -465,10 +434,10 @@ const CenterManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numTutors}</div>
+                    <div className="text-sm text-gray-900">{center.tutors?.length || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numStudents}</div>
+                    <div className="text-sm text-gray-900">{center.students?.length || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
@@ -493,7 +462,7 @@ const CenterManagement = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CenterManagement
+export default CenterManagement;
