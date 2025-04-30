@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
+import { Link as ScrollLink } from 'react-scroll';
 import { motion } from 'framer-motion';
 import { FiMenu, FiX } from 'react-icons/fi';
 import Logo from './Logo';
@@ -15,20 +15,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  if (location.pathname === '/admin-dashboard' || location.pathname === '/tutor-dashboard') {
-    return null;
-  }
+  if (location.pathname === '/admin-dashboard' || location.pathname === '/tutor-dashboard') return null;
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -41,7 +34,9 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
+    }`}>
       <div className="container-custom">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -49,9 +44,9 @@ const Navbar = () => {
             <Logo />
           </RouterLink>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link) => (
+            {navLinks.map((link) =>
               !link.special ? (
                 location.pathname === '/' ? (
                   <ScrollLink
@@ -60,7 +55,11 @@ const Navbar = () => {
                     smooth={true}
                     duration={500}
                     offset={-70}
-                    className="px-3 py-2 text-sm font-medium rounded-md cursor-pointer text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+                    className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer transition-colors ${
+                      isScrolled
+                        ? 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                        : 'text-white hover:text-accent-300'
+                    }`}
                     onClick={closeMenu}
                   >
                     {link.name}
@@ -69,34 +68,35 @@ const Navbar = () => {
                   <RouterLink
                     key={link.name}
                     to={`/#${link.path}`}
-                    className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      isScrolled
+                        ? 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                        : 'text-white hover:text-accent-300'
+                    }`}
                     onClick={closeMenu}
                   >
                     {link.name}
                   </RouterLink>
                 )
               ) : null
-            ))}
+            )}
 
-            {/* Admin and Tutor Buttons */}
+            {/* Special Buttons */}
             <div className="ml-6 flex items-center space-x-2">
-              {navLinks
-                .filter(link => link.special)
-                .map((link) => (
-                  <RouterLink
-                    key={link.name}
-                    to={link.path}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                      link.name === 'Admin'
-                        ? 'bg-secondary-600 text-white hover:bg-secondary-700'
-                        : 'bg-primary-600 text-white hover:bg-primary-700'
-                    }`}
-                    onClick={closeMenu}
-                  >
-                    {link.name}
-                  </RouterLink>
-                ))
-              }
+              {navLinks.filter(link => link.special).map((link) => (
+                <RouterLink
+                  key={link.name}
+                  to={link.path}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    link.name === 'Admin'
+                      ? 'bg-secondary-600 text-white hover:bg-secondary-700'
+                      : 'bg-primary-600 text-white hover:bg-primary-700'
+                  }`}
+                  onClick={closeMenu}
+                >
+                  {link.name}
+                </RouterLink>
+              ))}
             </div>
           </div>
 
@@ -104,7 +104,9 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50 focus:outline-none"
+              className={`p-2 rounded-md ${
+                isScrolled ? 'text-gray-700 hover:text-primary-600' : 'text-white hover:text-accent-300'
+              }`}
             >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
@@ -122,7 +124,7 @@ const Navbar = () => {
           className="md:hidden bg-white shadow-lg absolute top-full left-0 right-0 overflow-hidden"
         >
           <div className="px-4 pt-2 pb-4 space-y-1">
-            {navLinks.map((link) => (
+            {navLinks.map((link) =>
               !link.special ? (
                 location.pathname === '/' ? (
                   <ScrollLink
@@ -132,7 +134,7 @@ const Navbar = () => {
                     duration={500}
                     offset={-70}
                     className="block px-3 py-2 text-base font-medium rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50 cursor-pointer"
-                    onClick={() => { closeMenu(); }}
+                    onClick={closeMenu}
                   >
                     {link.name}
                   </ScrollLink>
@@ -147,9 +149,9 @@ const Navbar = () => {
                   </RouterLink>
                 )
               ) : null
-            ))}
+            )}
 
-            {/* Special links for Admin and Tutor */}
+            {/* Mobile Admin/Tutor */}
             {navLinks.filter(link => link.special).map((link) => (
               <RouterLink
                 key={link.name}
