@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import SearchControl from './SearchControl'; // Adjust path if needed
-
+import { reverseGeocode } from './utils/reverseGeocode';
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl
@@ -66,6 +66,16 @@ const CenterManagement = () => {
     location: null
   })
   const [position, setPosition] = useState([17.3850, 78.4867]) // Default to Hyderabad coordinates
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      if (position) {
+        const address = await reverseGeocode(position[0], position[1]);
+        setFormData((prev) => ({ ...prev, location: address }));
+      }
+    };
+    fetchAddress();
+  }, [position]);
 
   const handleSubmit = (e) => {
     e.preventDefault()
