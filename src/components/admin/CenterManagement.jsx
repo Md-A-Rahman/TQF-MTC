@@ -5,6 +5,8 @@ import useGet from '../CustomHooks/useGet'
 import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
+import SearchControl from './SearchControl'; // Adjust path if needed
+
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl
@@ -50,6 +52,8 @@ const LocationPicker = ({ position, setPosition }) => {
 //   },
 // ]
 
+
+
 const CenterManagement = () => {
   const [showForm, setShowForm] = useState(false)
   // const [centers, centers] = useState(null)
@@ -64,7 +68,7 @@ const CenterManagement = () => {
     sadarContact: '',
     location: null
   })
-  const [position, setPosition] = useState([17.3850, 78.4867])
+  const [position, setPosition] = useState([17.3850, 78.4867]) // Default to Hyderabad coordinates
 
   const { response: centers, loading } = useGet("http://localhost:3000/adminnoauth/Centers");
 
@@ -220,24 +224,40 @@ const CenterManagement = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Center Location
+                  Center Location (Click on map to set location)
                 </label>
                 <div className="h-[300px] rounded-lg overflow-hidden border border-gray-300">
-                  <MapContainer
-                    center={position}
-                    zoom={13}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <LocationPicker position={position} setPosition={setPosition} />
-                  </MapContainer>
+                <MapContainer
+                  center={position}
+                  zoom={13}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; OpenStreetMap contributors'
+                  />
+                  <SearchControl setPosition={setPosition} />  {/* ✅ Enable search */}
+                  <LocationPicker position={position} setPosition={setPosition} />
+                </MapContainer>
+
                 </div>
-                {position} <br />
-                {position}
-                <p className="mt-1 text-sm text-gray-500">Click on the map to select location</p>
+                <p className="mt-1 text-sm text-gray-500">
+                  Selected coordinates: {position[0].toFixed(4)}, {position[1].toFixed(4)}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">
+                  💡 Tip: 
+                  Open <a 
+                    href="https://maps.google.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-blue-600 underline"
+                  >
+                    Google Maps
+                  </a>, right-click your center's location, select 
+                  <strong> "What's here?"</strong>, and copy the coordinates shown at the bottom.
+                </p>
+
               </div>
 
               <div className="flex justify-end space-x-4">
