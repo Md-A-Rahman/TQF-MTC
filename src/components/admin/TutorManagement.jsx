@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import useGet from '../CustomHooks/useGet'
+import useGetTutors from "../CustomHooks/useGetTutors"
 import { FiUser, FiMail, FiPhone, FiBook, FiMapPin, FiClock, FiUpload, FiX, FiDownload, FiEdit2, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi'
 import Papa from 'papaparse'
 
@@ -12,34 +14,35 @@ const TutorManagement = () => {
   const itemsPerPage = 10
 
   // Sample tutor data
-  const tutors = [
-    {
-      id: 1,
-      fullName: 'Ahmed Khan',
-      email: 'ahmed.khan@example.com',
-      phone: '9876543210',
-      qualifications: 'M.A. Islamic Studies',
-      center: 'Malakpet Center',
-      subjects: ['Islamic Studies', 'Arabic'],
-      sessionType: 'arabic',
-      sessionTiming: 'after_fajr',
-      joinDate: '2023-01-15',
-      status: 'active'
-    },
-    // Add more sample tutors...
-  ].concat(Array(20).fill(null).map((_, index) => ({
-    id: index + 2,
-    fullName: `Tutor ${index + 2}`,
-    email: `tutor${index + 2}@example.com`,
-    phone: `987654${(3210 + index).toString().padStart(4, '0')}`,
-    qualifications: 'B.Ed',
-    center: index % 2 === 0 ? 'Malakpet Center' : 'Mehdipatnam Center',
-    subjects: ['Mathematics', 'Science'],
-    sessionType: 'tuition',
-    sessionTiming: 'after_zohar',
-    joinDate: '2023-01-15',
-    status: 'active'
-  })))
+  // const tutors = [
+  //   {
+  //     id: 1,
+  //     fullName: 'Ahmed Khan',
+  //     email: 'ahmed.khan@example.com',
+  //     phone: '9876543210',
+  //     qualifications: 'M.A. Islamic Studies',
+  //     center: 'Malakpet Center',
+  //     subjects: ['Islamic Studies', 'Arabic'],
+  //     sessionType: 'arabic',
+  //     sessionTiming: 'after_fajr',
+  //     joinDate: '2023-01-15',
+  //     status: 'active'
+  //   },
+  //   // Add more sample tutors...
+  // ]
+  // .concat(Array(20).fill(null).map((_, index) => ({
+  //   id: index + 2,
+  //   fullName: `Tutor ${index + 2}`,
+  //   email: `tutor${index + 2}@example.com`,
+  //   phone: `987654${(3210 + index).toString().padStart(4, '0')}`,
+  //   qualifications: 'B.Ed',
+  //   center: index % 2 === 0 ? 'Malakpet Center' : 'Mehdipatnam Center',
+  //   subjects: ['Mathematics', 'Science'],
+  //   sessionType: 'tuition',
+  //   sessionTiming: 'after_zohar',
+  //   joinDate: '2023-01-15',
+  //   status: 'active'
+  // })))
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -110,15 +113,15 @@ const TutorManagement = () => {
 
   const handleExportCSV = () => {
     const data = tutors.map(tutor => ({
-      'Full Name': tutor.fullName,
+      'Full Name': tutor.name,
       'Email': tutor.email,
       'Phone': tutor.phone,
-      'Center': tutor.center,
-      'Subjects': tutor.subjects.join(', '),
-      'Session Type': tutor.sessionType,
-      'Session Timing': tutor.sessionTiming,
-      'Join Date': tutor.joinDate,
-      'Status': tutor.status
+      'Center': tutor.centerID,
+      // 'Subjects': tutor.subjects.join(', '),
+      'Session Type': tutor.sessionType || "N/A",
+      'Session Timing': tutor.sessionTiming || "N/A",
+      'Join Date': tutor.joinDate || "N/A",
+      'Status': tutor.status || "Active"
     }))
 
     const csv = Papa.unparse(data)
@@ -134,19 +137,36 @@ const TutorManagement = () => {
   }
 
   // Filter tutors based on search term and selected center
+  // const filteredTutors = tutors.filter(tutor => {
+  //   const matchesSearch = tutor.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //                        tutor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //                        tutor.phone.includes(searchTerm)
+  //   const matchesCenter = !selectedCenter || tutor.center === selectedCenter
+  //   return matchesSearch && matchesCenter
+  // })
+
+  // // Calculate pagination
+  // const totalPages = Math.ceil(filteredTutors.length / itemsPerPage)
+  // const startIndex = (currentPage - 1) * itemsPerPage
+  // const paginatedTutors = filteredTutors.slice(startIndex, startIndex + itemsPerPage)
+
+  const { response: tutors, loading } = useGet("http://localhost:3000/adminnoauth/alltutors");
+
+  if (loading) return <p>Loading tutors...</p>;
+  console.log("From the TutorManagement..!!!",tutors)
+  if (!tutors) return <p>No tutors found.</p>;
+
   const filteredTutors = tutors.filter(tutor => {
-    const matchesSearch = tutor.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tutor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tutor.phone.includes(searchTerm)
-    const matchesCenter = !selectedCenter || tutor.center === selectedCenter
-    return matchesSearch && matchesCenter
-  })
+    const matchesSearch = (tutor.name.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+                         (tutor.email.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+                         (tutor.phone || "").includes(searchTerm);
+    const matchesCenter = !selectedCenter || tutor.center === selectedCenter;
+    return matchesSearch && matchesCenter;
+  });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredTutors.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedTutors = filteredTutors.slice(startIndex, startIndex + itemsPerPage)
-
+  const totalPages = Math.ceil(filteredTutors.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTutors = filteredTutors.slice(startIndex, startIndex + itemsPerPage);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -238,24 +258,24 @@ const TutorManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-medium">
-                        {tutor.fullName.charAt(0)}
+                        {tutor.name.charAt(0)}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{tutor.fullName}</div>
-                        <div className="text-sm text-gray-500">{tutor.qualifications}</div>
+                        <div className="text-sm font-medium text-gray-900">{tutor.name}</div>
+                        <div className="text-sm text-gray-500">{tutor.qualification}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{tutor.email}</div>
-                    <div className="text-sm text-gray-500">{tutor.phone}</div>
+                    <div className="text-sm text-gray-500">{tutor.number}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{tutor.center}</div>
+                    <div className="text-sm text-gray-900">{tutor.centerId}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 capitalize">{tutor.sessionType}</div>
-                    <div className="text-sm text-gray-500 capitalize">{tutor.sessionTiming.replace(/_/g, ' ')}</div>
+                    {/* <div className="text-sm text-gray-500 capitalize">{tutor.sessionTiming.replace(/_/g, ' ')}</div> */}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">

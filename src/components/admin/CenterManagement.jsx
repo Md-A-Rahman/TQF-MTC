@@ -1,108 +1,107 @@
-import { useState } from 'react'
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { motion, AnimatePresence } from 'framer-motion';
+import useGet from '../CustomHooks/useGet';
+import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { reverseGeocode } from './utils/reverseGeocode';
 
 // Fix for default marker icon
-delete L.Icon.Default.prototype._getIconUrl
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+});
 
 const LocationPicker = ({ position, setPosition }) => {
   useMapEvents({
     click: (e) => {
-      setPosition([e.latlng.lat, e.latlng.lng])
+      setPosition([e.latlng.lat, e.latlng.lng]);
     },
-  })
+  });
 
-  return position ? <Marker position={position} /> : null
-}
-
-// Sample data for demonstration
-const sampleCenters = [
-  {
-    id: 1,
-    centerName: 'Masjid-e-Ali Center',
-    location: 'Malakpet, Hyderabad',
-    coordinates: [17.3850, 78.4867],
-    numTutors: 5,
-    numStudents: 50,
-    sadarName: 'Ahmed Khan',
-    sadarContact: '9876543210',
-    area: 'south'
-  },
-  {
-    id: 2,
-    centerName: 'Masjid-e-Hussain Center',
-    location: 'Mehdipatnam, Hyderabad',
-    coordinates: [17.3937, 78.4377],
-    numTutors: 4,
-    numStudents: 45,
-    sadarName: 'Rahul Kumar',
-    sadarContact: '9876543211',
-    area: 'west'
-  },
-]
+  return position ? <Marker position={position} /> : null;
+};
 
 const CenterManagement = () => {
-  const [showForm, setShowForm] = useState(false)
-  const [showDetails, setShowDetails] = useState(null)
-  const [centers, setCenters] = useState(sampleCenters)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedArea, setSelectedArea] = useState('')
+  const [showForm, setShowForm] = useState(false);
+  const [showDetails, setShowDetails] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
   const [formData, setFormData] = useState({
     centerName: '',
     numTutors: '',
     numStudents: '',
     sadarName: '',
     sadarContact: '',
-    location: null
-  })
-  const [position, setPosition] = useState([17.3850, 78.4867])
+    coordinates: '',
+    location: '',
+  });
+  const [mapCenter, setMapCenter] = useState([17.3850, 78.4867]);
+  const [markerPosition, setMarkerPosition] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const newCenter = {
-      id: centers.length + 1,
-      ...formData,
-      coordinates: position,
-      location: 'Custom Location' // You would typically reverse geocode the coordinates
+  const { response: centers, loading } = useGet("http://localhost:3000/adminnoauth/Centers");
+
+  const handleCoordinatesChange = (e) => {
+    const value = e.target.value;
+    setFormData({ ...formData, coordinates: value });
+    
+    if (value) {
+      const parts = value.split(/[, ]+/).filter(part => part.trim() !== '');
+      
+      if (parts.length === 2) {
+        const lat = parseFloat(parts[0]);
+        const lng = parseFloat(parts[1]);
+        
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setMapCenter([lat, lng]);
+          setMarkerPosition([lat, lng]);
+          
+          reverseGeocode(lat, lng)
+            .then((address) => {
+              setFormData(prev => ({ ...prev, location: address || '' }));
+            })
+            .catch((error) => {
+              console.error('Error during reverse geocoding:', error);
+              setFormData(prev => ({ ...prev, location: 'Could not determine location' }));
+            });
+          return;
+        }
+      }
     }
-    setCenters([...centers, newCenter])
-    setShowForm(false)
-    setFormData({
-      centerName: '',
-      numTutors: '',
-      numStudents: '',
-      sadarName: '',
-      sadarContact: '',
-      location: null
-    })
-  }
+    
+    setFormData(prev => ({ ...prev, location: '' }));
+    setMarkerPosition(null);
+  };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAddNewCenter = (newCenter) => {
+    // This would be replaced with your API call to add a new center
+    console.log('New center to be added:', newCenter);
+    // setCenters([...centers, newCenter]);
+  };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this center?')) {
-      setCenters(centers.filter(center => center.id !== id))
+      // This would be replaced with your API call to delete a center
+      console.log('Center to be deleted:', id);
+      // setCenters(centers.filter(center => center.id !== id));
     }
-  }
+  };
+
+  if (loading) return <p>Loading centers...</p>;
+  if (!centers) return <p>No centers found.</p>;
 
   const filteredCenters = centers.filter(center => {
-    const matchesSearch = center.centerName.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesArea = !selectedArea || center.area === selectedArea
-    return matchesSearch && matchesArea
-  })
+    const matchesSearch = (center.name?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+    const matchesArea = !selectedArea || center.area === selectedArea;
+    return matchesSearch && matchesArea;
+  });
 
   return (
     <div className="space-y-6">
@@ -130,16 +129,41 @@ const CenterManagement = () => {
             animate={{ scale: 1 }}
             className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-              Add New Center
-            </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Add New Center
+              </h2>
+              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <FiX size={20} />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const { coordinates, ...rest } = formData;
+                const [lat, lng] = coordinates.split(/[, ]+/).map(parseFloat);
+                const newCenter = {
+                  ...rest,
+                  coordinates: [lat, lng],
+                };
+                handleAddNewCenter(newCenter);
+                setShowForm(false);
+                setFormData({
+                  centerName: '',
+                  numTutors: '',
+                  numStudents: '',
+                  sadarName: '',
+                  sadarContact: '',
+                  coordinates: '',
+                  location: '',
+                });
+              }}
+              className="space-y-6"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Center Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Center Name</label>
                   <input
                     type="text"
                     name="centerName"
@@ -151,9 +175,7 @@ const CenterManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Tutors
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Number of Tutors</label>
                   <input
                     type="number"
                     name="numTutors"
@@ -165,9 +187,7 @@ const CenterManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Students
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Number of Students</label>
                   <input
                     type="number"
                     name="numStudents"
@@ -179,9 +199,7 @@ const CenterManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sadar Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sadar Name</label>
                   <input
                     type="text"
                     name="sadarName"
@@ -193,9 +211,7 @@ const CenterManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sadar Contact
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sadar Contact</label>
                   <input
                     type="tel"
                     name="sadarContact"
@@ -207,28 +223,61 @@ const CenterManagement = () => {
                   />
                   <p className="mt-1 text-sm text-gray-500">10-digit mobile number</p>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Coordinates (Lat, Lng)</label>
+                  <input
+                    type="text"
+                    name="coordinates"
+                    value={formData.coordinates}
+                    onChange={handleCoordinatesChange}
+                    placeholder="e.g. 17.3850, 78.4867"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    required
+                  />
+                  <div className="mt-1 flex items-start text-sm text-blue-600">
+                    <FiMapPin className="mr-1.5 mt-0.5 flex-shrink-0" />
+                    <span>
+                      <span className="font-medium">Quick tip:</span> Right-click any location on Google Maps and select "Copy coordinates" to paste here
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location (Auto-generated)</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    readOnly
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Center Location
-                </label>
-                <div className="h-[300px] rounded-lg overflow-hidden border border-gray-300">
-                  <MapContainer
-                    center={position}
-                    zoom={13}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <LocationPicker position={position} setPosition={setPosition} />
-                  </MapContainer>
-                </div>
-                {position} <br />
-                {position}
-                <p className="mt-1 text-sm text-gray-500">Click on the map to select location</p>
+              <div className="h-[300px] rounded-lg overflow-hidden border border-gray-300 mt-4">
+                <MapContainer center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© OpenStreetMap contributors" />
+                  <LocationPicker position={markerPosition} setPosition={(pos) => {
+                    if (pos) {
+                      setFormData(prev => ({
+                        ...prev,
+                        coordinates: `${pos[0]}, ${pos[1]}`,
+                      }));
+                      setMarkerPosition(pos);
+                      setMapCenter(pos);
+                      
+                      reverseGeocode(pos[0], pos[1])
+                        .then((address) => {
+                          setFormData(prev => ({ ...prev, location: address || '' }));
+                        })
+                        .catch((error) => {
+                          console.error('Error during reverse geocoding:', error);
+                          setFormData(prev => ({ ...prev, location: 'Could not determine location' }));
+                        });
+                    }
+                  }} />
+                </MapContainer>
               </div>
 
               <div className="flex justify-end space-x-4">
@@ -282,7 +331,7 @@ const CenterManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Center Name</p>
-                    <p className="font-medium">{showDetails.centerName}</p>
+                    <p className="font-medium">{showDetails.name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Location</p>
@@ -290,35 +339,33 @@ const CenterManagement = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Number of Tutors</p>
-                    <p className="font-medium">{showDetails.numTutors}</p>
+                    <p className="font-medium">{showDetails.tutors?.length || 0}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Number of Students</p>
-                    <p className="font-medium">{showDetails.numStudents}</p>
+                    <p className="font-medium">{showDetails.students?.length || 0}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Sadar Name</p>
-                    <p className="font-medium">{showDetails.sadarName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Sadar Contact</p>
-                    <p className="font-medium">{showDetails.sadarContact}</p>
+                    <p className="text-sm text-gray-500">Coordinates</p>
+                    <p className="font-medium">{showDetails.coordinates?.join(', ') || 'N/A'}</p>
                   </div>
                 </div>
 
-                <div className="h-[200px] rounded-lg overflow-hidden border border-gray-300 mt-4">
-                  <MapContainer
-                    center={showDetails.coordinates}
-                    zoom={13}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <Marker position={showDetails.coordinates} />
-                  </MapContainer>
-                </div>
+                {showDetails.coordinates && (
+                  <div className="h-[200px] rounded-lg overflow-hidden border border-gray-300 mt-4">
+                    <MapContainer
+                      center={showDetails.coordinates}
+                      zoom={13}
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
+                      <Marker position={showDetails.coordinates} />
+                    </MapContainer>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -378,7 +425,7 @@ const CenterManagement = () => {
                   onClick={() => setShowDetails(center)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{center.centerName}</div>
+                    <div className="text-sm font-medium text-gray-900">{center.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500 flex items-center">
@@ -387,10 +434,10 @@ const CenterManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numTutors}</div>
+                    <div className="text-sm text-gray-900">{center.tutors?.length || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{center.numStudents}</div>
+                    <div className="text-sm text-gray-900">{center.students?.length || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
@@ -415,7 +462,8 @@ const CenterManagement = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CenterManagement
+
+export default CenterManagement;

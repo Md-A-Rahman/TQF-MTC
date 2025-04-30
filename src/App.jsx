@@ -23,7 +23,7 @@ function App() {
         </Routes>
       </main>
       <ToastContainer />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
