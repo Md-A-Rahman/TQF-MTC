@@ -1,8 +1,16 @@
-import { Link } from 'react-router-dom'
-import { FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi'
-import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa'
+import { useLocation } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
+import { FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi';
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 
 const Footer = () => {
+  const location = useLocation();
+
+  // ✅ Define where to show the footer
+  const showFooterOn = ['/', '/admin', '/tutor'];
+  const showFooter = showFooterOn.includes(location.pathname);
+
+  if (!showFooter) return null; // 🔥 Hide footer on other pages
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container-custom py-12">
@@ -34,11 +42,11 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-300 hover:text-accent-500 transition-colors">Home</Link></li>
-              <li><Link to="/#about" className="text-gray-300 hover:text-accent-500 transition-colors">About Us</Link></li>
-              <li><Link to="/#programs" className="text-gray-300 hover:text-accent-500 transition-colors">Our Programs</Link></li>
-              <li><Link to="/#impact" className="text-gray-300 hover:text-accent-500 transition-colors">Our Impact</Link></li>
-              <li><Link to="/#contact" className="text-gray-300 hover:text-accent-500 transition-colors">Contact Us</Link></li>
+              <li><ScrollLink to="home" smooth={true} duration={500} offset={-70} className="cursor-pointer text-gray-300 hover:text-accent-500 transition-colors">Home</ScrollLink></li>
+              <li><ScrollLink to="about" smooth={true} duration={500} offset={-70} className="cursor-pointer text-gray-300 hover:text-accent-500 transition-colors">About Us</ScrollLink></li>
+              <li><ScrollLink to="programs" smooth={true} duration={500} offset={-70} className="cursor-pointer text-gray-300 hover:text-accent-500 transition-colors">Our Programs</ScrollLink></li>
+              <li><ScrollLink to="impact" smooth={true} duration={500} offset={-70} className="cursor-pointer text-gray-300 hover:text-accent-500 transition-colors">Our Impact</ScrollLink></li>
+              <li><ScrollLink to="contact" smooth={true} duration={500} offset={-70} className="cursor-pointer text-gray-300 hover:text-accent-500 transition-colors">Contact Us</ScrollLink></li>
             </ul>
           </div>
           
