@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import useGet from '../CustomHooks/useGet';
 import { FiEdit2, FiTrash2, FiX, FiMapPin } from 'react-icons/fi';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import useGet from '../CustomHooks/useGet';
 import { reverseGeocode } from './utils/reverseGeocode';
 
 // Fix for default marker icon
@@ -31,18 +31,21 @@ const CenterManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [formData, setFormData] = useState({
-    centerName: '',
-    numTutors: '',
-    numStudents: '',
+    name: '',
+    tutors: '',
+    students: '',
     sadarName: '',
     sadarContact: '',
     coordinates: '',
     location: '',
+    area: ''
   });
   const [mapCenter, setMapCenter] = useState([17.3850, 78.4867]);
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { response: centers, loading } = useGet("http://localhost:3000/adminnoauth/Centers");
+  // Get centers data with our fixed useGet hook
+  const { response: centers, loading, error, refetch } = useGet("https://tuitioncenter-backend.onrender.com/adminnoauth/Centers");
 
   const handleCoordinatesChange = (e) => {
     const value = e.target.value;
@@ -80,21 +83,117 @@ const CenterManagement = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddNewCenter = (newCenter) => {
-    // This would be replaced with your API call to add a new center
-    console.log('New center to be added:', newCenter);
-    // setCenters([...centers, newCenter]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Validate required fields
+      if (!formData.name || !formData.sadarName || !formData.sadarContact || !formData.coordinates) {
+        throw new Error('Please fill all required fields');
+      }
+
+      const [lat, lng] = formData.coordinates.split(/[, ]+/).map(coord => parseFloat(coord.trim()));
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        throw new Error('Invalid coordinates format. Please use "latitude, longitude"');
+      }
+
+      const newCenter = {
+        name: formData.name,
+        tutors: parseInt(formData.tutors) || 0,
+        students: parseInt(formData.students) || 0,
+        sadarName: formData.sadarName,
+        sadarContact: formData.sadarContact,
+        coordinates: [lat, lng],
+        location: formData.location || 'Custom Location',
+        area: selectedArea || 'general'
+      };
+
+      const response = await fetch('https://tuitioncenter-backend.onrender.com/adminnoauth/Centers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCenter),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add center');
+      }
+
+      // Safely refetch data with error handling
+      try {
+        if (typeof refetch === 'function') {
+          await refetch();
+        } else {
+          console.warn("Refetch is not available, will reload page instead");
+          window.location.reload();
+        }
+      } catch (refetchError) {
+        console.error("Error refetching data:", refetchError);
+        // Fall back to reload if refetch fails
+        window.location.reload();
+      }
+      
+      // Reset form
+      setShowForm(false);
+      setFormData({
+        name: '',
+        tutors: '',
+        students: '',
+        sadarName: '',
+        sadarContact: '',
+        coordinates: '',
+        location: '',
+        area: ''
+      });
+      
+      alert('Center added successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this center?')) {
-      // This would be replaced with your API call to delete a center
-      console.log('Center to be deleted:', id);
-      // setCenters(centers.filter(center => center.id !== id));
+      try {
+        const response = await fetch(`https://tuitioncenter-backend.onrender.com/adminnoauth/Centers/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete center');
+        }
+
+        // Safely refetch data with error handling
+        try {
+          if (typeof refetch === 'function') {
+            await refetch();
+          } else {
+            console.warn("Refetch is not available, will reload page instead");
+            window.location.reload();
+          }
+        } catch (refetchError) {
+          console.error("Error refetching data:", refetchError);
+          // Fall back to reload if refetch fails
+          window.location.reload();
+        }
+        
+        alert('Center deleted successfully!');
+      } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+      }
     }
   };
 
   if (loading) return <p>Loading centers...</p>;
+  if (error) return <p>Error loading centers: {error}</p>;
   if (!centers) return <p>No centers found.</p>;
 
   const filteredCenters = centers.filter(center => {
@@ -138,36 +237,14 @@ const CenterManagement = () => {
               </button>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const { coordinates, ...rest } = formData;
-                const [lat, lng] = coordinates.split(/[, ]+/).map(parseFloat);
-                const newCenter = {
-                  ...rest,
-                  coordinates: [lat, lng],
-                };
-                handleAddNewCenter(newCenter);
-                setShowForm(false);
-                setFormData({
-                  centerName: '',
-                  numTutors: '',
-                  numStudents: '',
-                  sadarName: '',
-                  sadarContact: '',
-                  coordinates: '',
-                  location: '',
-                });
-              }}
-              className="space-y-6"
-            >
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Center Name</label>
                   <input
                     type="text"
-                    name="centerName"
-                    value={formData.centerName}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     required
@@ -178,11 +255,12 @@ const CenterManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Number of Tutors</label>
                   <input
                     type="number"
-                    name="numTutors"
-                    value={formData.numTutors}
+                    name="tutors"
+                    value={formData.tutors}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     required
+                    min="0"
                   />
                 </div>
 
@@ -190,11 +268,12 @@ const CenterManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Number of Students</label>
                   <input
                     type="number"
-                    name="numStudents"
-                    value={formData.numStudents}
+                    name="students"
+                    value={formData.students}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     required
+                    min="0"
                   />
                 </div>
 
@@ -222,6 +301,23 @@ const CenterManagement = () => {
                     required
                   />
                   <p className="mt-1 text-sm text-gray-500">10-digit mobile number</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Area</label>
+                  <select
+                    name="area"
+                    value={selectedArea}
+                    onChange={(e) => setSelectedArea(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    required
+                  >
+                    <option value="">Select Area</option>
+                    <option value="north">North Hyderabad</option>
+                    <option value="south">South Hyderabad</option>
+                    <option value="east">East Hyderabad</option>
+                    <option value="west">West Hyderabad</option>
+                  </select>
                 </div>
 
                 <div>
@@ -290,9 +386,12 @@ const CenterManagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                  disabled={isSubmitting}
+                  className={`px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg transition-all duration-300 shadow-md ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:from-blue-700 hover:to-purple-700 hover:shadow-lg'
+                  }`}
                 >
-                  Add Center
+                  {isSubmitting ? 'Adding...' : 'Add Center'}
                 </button>
               </div>
             </form>
@@ -344,6 +443,18 @@ const CenterManagement = () => {
                   <div>
                     <p className="text-sm text-gray-500">Number of Students</p>
                     <p className="font-medium">{showDetails.students?.length || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Sadar Name</p>
+                    <p className="font-medium">{showDetails.sadarName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Sadar Contact</p>
+                    <p className="font-medium">{showDetails.sadarContact}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Area</p>
+                    <p className="font-medium">{showDetails.area || 'Not specified'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Coordinates</p>
@@ -413,6 +524,9 @@ const CenterManagement = () => {
                   Students
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Area
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -420,7 +534,7 @@ const CenterManagement = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredCenters.map((center) => (
                 <tr
-                  key={center.id}
+                  key={center._id}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => setShowDetails(center)}
                 >
@@ -439,16 +553,19 @@ const CenterManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{center.students?.length || 0}</div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{center.area || 'N/A'}</div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
                       <button
-                        onClick={() => console.log('Edit center:', center.id)}
+                        onClick={() => console.log('Edit center:', center._id)}
                         className="text-blue-600 hover:text-blue-800 transition-colors"
                       >
                         <FiEdit2 size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(center.id)}
+                        onClick={() => handleDelete(center._id)}
                         className="text-red-600 hover:text-red-800 transition-colors"
                       >
                         <FiTrash2 size={18} />
@@ -464,6 +581,5 @@ const CenterManagement = () => {
     </div>
   );
 };
-
 
 export default CenterManagement;
