@@ -24,6 +24,37 @@ const AdminPage = () => {
     window.scrollTo(0, 0)
   }, [])
 
+
+//   useEffect(() => {
+//     if (!loading && response?.success) {
+//       if (response.user) {
+//         const { user, token } = response;
+
+//         localStorage.setItem("token", token);
+//         localStorage.setItem("user", JSON.stringify(user));
+
+//         // Accessing Stored Token/User Later
+//         // const token = localStorage.getItem("token");
+//         // const user = JSON.parse(localStorage.getItem("user"));
+
+//         setIsLoggedIn(true);
+//         navigate("/admin-dashboard");
+//       }
+//     }
+//   }, [loading]);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+//     const payload = {
+//       email: email,
+//       password: password,
+//     };
+//     // console.log(payload)
+    
+//     await post("http://localhost:3000/login", payload);
+// }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     setError('')

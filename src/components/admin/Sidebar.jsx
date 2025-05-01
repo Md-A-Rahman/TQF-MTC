@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom'
 const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
   const navigate = useNavigate()
   const HandleLogout = () => {
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("user");
+    // setIsLoggedIn(false);
     navigate('/')
   }
   return (
