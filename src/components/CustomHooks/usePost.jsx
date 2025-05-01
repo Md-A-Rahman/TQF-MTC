@@ -7,12 +7,13 @@ const usePost = () => {
   const [loading, setLoading] = useState(false);
 
   const post = async (url, payload) => {
+    setResponse(null);
     setLoading(true);
     try {
       const res = await axios.post(url, payload);
       setResponse(res.data);
       // return response;
-      return {data:res.data};
+      // return {data:res.data};
     } catch (err) {
       console.log(err);
       notifyError(err.response?.data?.message || "Something went wrong");
@@ -60,7 +61,3 @@ export default usePost;
 // }
 
 // export default usePost;
-
-
-
-

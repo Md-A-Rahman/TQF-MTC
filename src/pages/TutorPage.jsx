@@ -17,6 +17,24 @@ const TutorPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    if (!loading && response?.success) {
+      if (response.user) {
+        const { user, token } = response;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Accessing Stored Token/User Later
+        // const token = localStorage.getItem("token");
+        // const user = JSON.parse(localStorage.getItem("user"));
+
+        setIsLoggedIn(true);
+        navigate("/tutor-dashboard");
+      }
+    }
+  }, [loading]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -26,31 +44,31 @@ const TutorPage = () => {
     };
     // console.log(payload)
 
-    const result = await post("http://localhost:3000/login", payload);
-    console.log("API called")
-    console.log(result)
-    console.log("response: ",response,"loading: ",loading)
+    await post("http://localhost:3000/login", payload);
+    // console.log("API called")
+    // console.log(result)
+    // console.log("response: ",response,"loading: ",loading)
 
-    if(result.data.user){
+    // if(result.data.user){
 
-      const { user, token } = result.data;
+    //   const { user, token } = result.data;
   
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+    //   localStorage.setItem("token", token);
+    //   localStorage.setItem("user", JSON.stringify(user));
 
-      // Accessing Stored Token/User Later
-      // const token = localStorage.getItem("token");
-      // const user = JSON.parse(localStorage.getItem("user"));
+    //   // Accessing Stored Token/User Later
+    //   // const token = localStorage.getItem("token");
+    //   // const user = JSON.parse(localStorage.getItem("user"));
   
-      setIsLoggedIn(true);
-      navigate("/tutor-dashboard");
+    //   setIsLoggedIn(true);
+    //   navigate("/tutor-dashboard");
 
-    }
+    // }
 
-    else {
-      setError(result.error.message || "Login failed");
-      return;
-    }
+    // else {
+    //   setError(result.error.message || "Login failed");
+    //   return;
+    // }
 
     // console.log("Msg: ",result.message);
     // console.log("API Response:", result);

@@ -28,6 +28,9 @@ const AdminPage = () => {
     e.preventDefault()
     setError('')
 
+    
+
+
     if (username === 'admin@gmail.com' && password === 'admin@123') {
       setIsLoggedIn(true)
       navigate('/admin-dashboard')
