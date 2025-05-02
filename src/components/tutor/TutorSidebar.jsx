@@ -20,7 +20,7 @@ const TutorSidebar = ({ activeTab, setActiveTab, tabs }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    navigate("/");
+    navigate('/')
   };
 
   return (
