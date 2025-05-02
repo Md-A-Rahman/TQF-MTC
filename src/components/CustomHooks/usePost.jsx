@@ -4,23 +4,24 @@ import { notifyError } from "../admin/toastConfig";
 
 const usePost = () => {
   const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingPost, setLoadingPost] = useState(false);
 
   const post = async (url, payload) => {
-    setLoading(true);
+    setLoadingPost(true);
     try {
       const res = await axios.post(url, payload);
+      console.log("UsePost Call")
       setResponse(res.data);
       return {data:res.data}
     } catch (err) {
       console.log(err);
       notifyError(err.response?.data?.message || "Something went wrong");
     } finally {
-      setLoading(false);
+      setLoadingPost(false);
     }
   };
 
-  return { post, response, loading };
+  return { post, response, loadingPost };
 };
 
 export default usePost;

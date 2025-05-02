@@ -70,15 +70,15 @@ const TutorManagement = () => {
     { id: 2, name: 'Mehdipatnam Center' },
   ]
 
-  const subjects = [
-    'Mathematics',
-    'Science',
-    'English',
-    'Social Studies',
-    'Islamic Studies',
-    'Urdu',
-    'Hindi'
-  ]
+  // const subjects = [
+  //   'Mathematics',
+  //   'Science',
+  //   'English',
+  //   'Social Studies',
+  //   'Islamic Studies',
+  //   'Urdu',
+  //   'Hindi'
+  // ]
 
   const handleChange = (e) => {
     const { name, value, type } = e.target
@@ -150,7 +150,7 @@ const TutorManagement = () => {
   // const startIndex = (currentPage - 1) * itemsPerPage
   // const paginatedTutors = filteredTutors.slice(startIndex, startIndex + itemsPerPage)
 
-  const { response: tutors, loading } = useGet("https://tuitioncenter-backend.onrender.com/adminnoauth/alltutors");
+  const { response: tutors, loading } = useGet("http://localhost:3000/adminnoauth/alltutors");
 
   if (loading) return <p>Loading tutors...</p>;
   console.log("From the TutorManagement..!!!",tutors)
@@ -881,4 +881,3 @@ const TutorManagement = () => {
 }
 
 export default TutorManagement
-
