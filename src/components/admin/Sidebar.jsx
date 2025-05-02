@@ -1,9 +1,13 @@
+// import { useState } from "react";
 import { motion } from 'framer-motion'
 import { FiLogOut } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 // import { useState } from 'react'
 
 // const [isLoggedIn,setIsLoggedIn]=useState(true)
+
+// const [isLoggedIn,setIsLoggedIn]=useState(true)
+// const [isLoggedIn, setIsLoggedIn] = useState(false)
 
 const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
   const navigate = useNavigate()
@@ -12,6 +16,7 @@ const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
     localStorage.removeItem("user");
     // setIsLoggedIn(false);
     navigate('/')
+    // console.log("home")
   }
   return (
     <aside className="w-64 bg-white shadow-xl fixed h-screen bg-gradient-to-b from-white to-blue-50">

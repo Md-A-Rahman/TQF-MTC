@@ -26,90 +26,9 @@ const AdminPage = () => {
     window.scrollTo(0, 0)
   }, [])
 
-  useEffect(() => {
-    if (!loading && response?.success) {
-      if (response.user) {
-        const { user, token } = response;
-        console.log(user.role)
-        if(user.role===1){
-          navigate('/tutor')
-        }
-        else if(user.role===2){
-
-          
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-          
-          // Accessing Stored Token/User Later
-          // const token = localStorage.getItem("token");
-          // const user = JSON.parse(localStorage.getItem("user"));
-          
-          setIsLoggedIn(true);
-          navigate("/admin-dashboard");
-        }
-      }
-    }
-  }, [loading]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    console.log(username,password)
-    const payload = {
-      email: username,
-      password: password,
-    };
-    // console.log(payload)
-
-    await post("http://localhost:3000/login", payload);
-    // console.log("API called")
-    // console.log(result)
-    // console.log("response: ",response,"loading: ",loading)
-
-    // if(result.data.user){
-
-    //   const { user, token } = result.data;
-  
-    //   localStorage.setItem("token", token);
-    //   localStorage.setItem("user", JSON.stringify(user));
-
-    //   // Accessing Stored Token/User Later
-    //   // const token = localStorage.getItem("token");
-    //   // const user = JSON.parse(localStorage.getItem("user"));
-  
-    //   setIsLoggedIn(true);
-    //   navigate("/tutor-dashboard");
-
-    // }
-
-    // else {
-    //   setError(result.error.message || "Login failed");
-    //   return;
-    // }
-
-    // console.log("Msg: ",result.message);
-    // console.log("API Response:", result);
-
-
-    // console.log(user,token,message)
-    // console.log("API Response:", result.data.message);
-    // console.log("API Response:", result.data.user);
-    // console.log("API Response:", result.data.token);
-
-    // const {response,loading}=usePost("http://localhost:3000/login",payload)
-
-    // if (phone === "9876543210" && password === "tutor@123") {
-    //   setIsLoggedIn(true);
-
-    // }
-    // else {
-    //   setError("Invalid credentials. Please try again.");
-    // }
-  };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault()
-  //   setError('')
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setError('')
 
   //   if (username === 'admin@gmail.com' && password === 'admin@123') {
   //     setIsLoggedIn(true)

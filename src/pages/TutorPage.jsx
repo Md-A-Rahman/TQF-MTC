@@ -12,10 +12,35 @@ const TutorPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { post, loading,response } = usePost();
+  const { post, loading,response } = usePost();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (!loading && response?.success) {
+      if (response.user) {
+        const { user, token } = response;
+        console.log(user.role)
+        if(user.role===2){
+          navigate("/admin-dashboard")
+        }
+        else if(user.role===1){
+          
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          
+          // Accessing Stored Token/User Later
+          // const token = localStorage.getItem("token");
+          // const user = JSON.parse(localStorage.getItem("user"));
+          
+          setIsLoggedIn(true);
+          navigate("/tutor-dashboard");
+        }
+      }
+    }
+  }, [loading]);
 
   useEffect(() => {
     if (!loading && response?.success) {
