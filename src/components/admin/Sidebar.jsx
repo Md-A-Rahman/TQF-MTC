@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion'
 import { FiLogOut } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+// import { useState } from 'react'
+
+// const [isLoggedIn,setIsLoggedIn]=useState(true)
 
 const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
   const navigate = useNavigate()
   const HandleLogout = () => {
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     // setIsLoggedIn(false);
     navigate('/')
   }

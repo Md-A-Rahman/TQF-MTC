@@ -12,7 +12,6 @@ const TutorPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { post, loading,response } = usePost();
-  
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -22,16 +21,22 @@ const TutorPage = () => {
     if (!loading && response?.success) {
       if (response.user) {
         const { user, token } = response;
-
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // Accessing Stored Token/User Later
-        // const token = localStorage.getItem("token");
-        // const user = JSON.parse(localStorage.getItem("user"));
-
-        setIsLoggedIn(true);
-        navigate("/tutor-dashboard");
+        console.log(user.role)
+        if(user.role===2){
+          navigate("/admin-dashboard")
+        }
+        else if(user.role===1){
+          
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          
+          // Accessing Stored Token/User Later
+          // const token = localStorage.getItem("token");
+          // const user = JSON.parse(localStorage.getItem("user"));
+          
+          setIsLoggedIn(true);
+          navigate("/tutor-dashboard");
+        }
       }
     }
   }, [loading]);
@@ -43,63 +48,8 @@ const TutorPage = () => {
       number: phone,
       password: password,
     };
-    // console.log(payload)
-    
-    await post("http://localhost:3000/login", payload);
-}
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   const payload = {
-  //     number: phone,
-  //     password: password,
-  //   };
-  //   // console.log(payload)
-
-  //   const result = await post("http://localhost:3000/login", payload);
-
-  //   if(result.data.user){
-
-  //     const { user, token } = result.data;
-  
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("user", JSON.stringify(user));
-
-  //     // Accessing Stored Token/User Later
-  //     // const token = localStorage.getItem("token");
-  //     // const user = JSON.parse(localStorage.getItem("user"));
-  
-  //     setIsLoggedIn(true);
-  //     navigate("/tutor-dashboard");
-
-  //   }
-
-  //   else {
-  //     setError(result.error.message || "Login failed");
-  //     return;
-  //   }
-
-  //   // console.log("Msg: ",result.message);
-  //   // console.log("API Response:", result);
-
-
-  //   // console.log(user,token,message)
-  //   // console.log("API Response:", result.data.message);
-  //   // console.log("API Response:", result.data.user);
-  //   // console.log("API Response:", result.data.token);
-
-  //   // const {response,loading}=usePost("http://localhost:3000/login",payload)
-  //   // console.log("response: ",response,"loading: ",loading)
-
-  //   // if (phone === "9876543210" && password === "tutor@123") {
-  //   //   setIsLoggedIn(true);
-
-  //   // }
-  //   // else {
-  //   //   setError("Invalid credentials. Please try again.");
-  //   // }
-  // };
+    await post("https://tuitioncenter-backend.onrender.com/login", payload);
+  };
 
   if (isLoggedIn) {
     return <TutorDashboard />;
