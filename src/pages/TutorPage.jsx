@@ -44,7 +44,7 @@ const TutorPage = () => {
     };
     // console.log(payload)
 
-    await post("http://localhost:3000/login", payload);
+    await post("https://tuitioncenter-backend.onrender.com/login", payload);
     // console.log("API called")
     // console.log(result)
     // console.log("response: ",response,"loading: ",loading)
