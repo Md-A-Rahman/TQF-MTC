@@ -12,7 +12,7 @@ const TutorPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { post, loading,response } = usePost();
-  const { post, loading,response } = usePost();
+  
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -48,7 +48,7 @@ const TutorPage = () => {
         const { user, token } = response;
         console.log(user.role)
         if(user.role===2){
-          navigate("/admin-dashboard")
+          navigate("/admin")
         }
         else if(user.role===1){
           
