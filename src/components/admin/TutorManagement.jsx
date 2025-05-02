@@ -32,9 +32,9 @@ const TutorManagement = () => {
   // ]
   // .concat(Array(20).fill(null).map((_, index) => ({
   //   id: index + 2,
-  //   fullName: `Tutor ${index + 2}`,
-  //   email: `tutor${index + 2}@example.com`,
-  //   phone: `987654${(3210 + index).toString().padStart(4, '0')}`,
+  //   fullName: Tutor ${index + 2},
+  //   email: tutor${index + 2}@example.com,
+  //   phone: 987654${(3210 + index).toString().padStart(4, '0')},
   //   qualifications: 'B.Ed',
   //   center: index % 2 === 0 ? 'Malakpet Center' : 'Mehdipatnam Center',
   //   subjects: ['Mathematics', 'Science'],
