@@ -20,7 +20,7 @@ const AdminPage = () => {
     role: 'admin'
   })
   const navigate = useNavigate()
-  const { post, loading,response } = usePost();
+  const { post, loading, response } = usePost();
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -30,16 +30,26 @@ const AdminPage = () => {
     if (!loading && response?.success) {
       if (response.user) {
         const { user, token } = response;
+        console.log(user.role)
+        if(user.role===1){
+          navigate('/tutor')
+        }
+        else if(user.role===2){
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // Accessing Stored Token/User Later
-        // const token = localStorage.getItem("token");
-        // const user = JSON.parse(localStorage.getItem("user"));
-
-        setIsLoggedIn(true);
-        navigate("/admin-dashboard");
+          
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          
+          // Accessing Stored Token/User Later
+          // const token = localStorage.getItem("token");
+          // const user = JSON.parse(localStorage.getItem("user"));
+          
+          setIsLoggedIn(true);
+          navigate("/admin-dashboard");
+        }
+        // else{
+        //   navigate("/")
+        // }
       }
     }
   }, [loading]);
@@ -47,13 +57,14 @@ const AdminPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    console.log(username,password)
     const payload = {
-      email: email,
+      email: username,
       password: password,
     };
     // console.log(payload)
 
-    await post("https://tuitioncenter-backend.onrender.com/login", payload);
+    await post("http://localhost:3000/login", payload);
     // console.log("API called")
     // console.log(result)
     // console.log("response: ",response,"loading: ",loading)
