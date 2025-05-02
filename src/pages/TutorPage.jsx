@@ -21,16 +21,22 @@ const TutorPage = () => {
     if (!loading && response?.success) {
       if (response.user) {
         const { user, token } = response;
-
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // Accessing Stored Token/User Later
-        // const token = localStorage.getItem("token");
-        // const user = JSON.parse(localStorage.getItem("user"));
-
-        setIsLoggedIn(true);
-        navigate("/tutor-dashboard");
+        console.log(user.role)
+        if(user.role===2){
+          navigate("/admin-dashboard")
+        }
+        else if(user.role===1){
+          
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          
+          // Accessing Stored Token/User Later
+          // const token = localStorage.getItem("token");
+          // const user = JSON.parse(localStorage.getItem("user"));
+          
+          setIsLoggedIn(true);
+          navigate("/tutor-dashboard");
+        }
       }
     }
   }, [loading]);
