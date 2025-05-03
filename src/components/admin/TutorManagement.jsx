@@ -150,7 +150,7 @@ const TutorManagement = () => {
   // const startIndex = (currentPage - 1) * itemsPerPage
   // const paginatedTutors = filteredTutors.slice(startIndex, startIndex + itemsPerPage)
 
-  const { response: tutors, loading } = useGet("https://tuitioncenter-backend.onrender.com/adminnoauth/alltutors");
+  const { response: tutors, loading } = useGet("http://localhost:3000/adminnoauth/alltutors");
 
   if (loading) return <p>Loading tutors...</p>;
   console.log("From the TutorManagement..!!!",tutors)
